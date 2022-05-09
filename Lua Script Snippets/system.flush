@@ -1,0 +1,14 @@
+if (system.getArkTime()-lastMouseTime) > 0.016 then
+    local oldmousedeltax = mousedeltax
+    local oldmousedeltay = mousedeltay
+    mousedeltax = system.getMouseDeltaX()
+    mousedeltay = system.getMouseDeltaY()
+
+    if mousedeltax == 0 then
+        mousedeltax = oldmousedeltax
+    end
+    if mousedeltay == 0 then
+        mousedeltay = oldmousedeltay
+    end
+    lastMouseTime = system.getArkTime()
+end

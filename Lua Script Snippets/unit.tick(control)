@@ -1,0 +1,96 @@
+system.print(mousedeltax)
+system.print(mousedeltay)
+
+if analog_input ==1 then
+    local mousedelta_x = tostring(mousedeltax)
+    mousedelta_x = string.sub(mousedelta_x, 1, -3)
+
+    if mousedelta_x:len()>6 then
+        right_trigger = tonumber(string.sub(mousedelta_x, 1, mousedelta_x:len()-6))
+        if right_trigger < 4 then
+            right_trigger = 0
+        end
+        right_trigger= right_trigger/40
+        mousedelta_x = string.sub(mousedelta_x, 3)
+    else
+        right_trigger = 0
+    end
+    system.print("Right Trigger  "..right_trigger)
+
+    if mousedelta_x:len()>3 then
+        right_stick_x = tonumber(string.sub(mousedelta_x, 1, mousedelta_x:len()-3))
+        if right_stick_x>400 then
+            right_stick_x= (-(right_stick_x - 400))
+            if math.abs(right_stick_x)<40 then right_stick_x = 0 end
+
+            right_stick_x = right_stick_x/400
+        else
+            if math.abs(right_stick_x)<40 then right_stick_x = 0 end
+            right_stick_x = right_stick_x/400
+        end
+        mousedelta_x= string.sub(mousedelta_x, mousedelta_x:len()-2)
+    else
+        right_stick_x = 0
+    end
+    system.print("Right Stick  "..right_stick_x)
+
+    if mousedelta_x:len()>0 then
+        left_stick_x = tonumber(mousedelta_x)
+        if left_stick_x>400 then
+            left_stick_x= (-(left_stick_x - 400))
+            if math.abs(left_stick_x)<40 then left_stick_x = 0 end
+            left_stick_x = left_stick_x/400
+        else
+            if math.abs(left_stick_x)<40 then left_stick_x = 0 end
+            left_stick_x = left_stick_x/400
+        end
+    else
+        left_stick_x = 0
+    end
+    system.print("Left Stick  "..left_stick_x)
+
+    local mousedelta_y = tostring(mousedeltay)
+    mousedelta_y = string.sub(mousedelta_y, 1, -3)
+
+    if mousedelta_y:len()>6 then
+        left_trigger = tonumber(string.sub(mousedelta_y, 1, mousedelta_y:len()-6))
+        if left_trigger<4 then left_trigger = 0 end
+        left_trigger = left_trigger/40
+        mousedelta_y = string.sub(mousedelta_y, 3)
+    else
+        left_trigger = 0
+    end
+
+    system.print("Left Trigger  "..left_trigger)
+    if mousedelta_y:len()>3 then
+        right_stick_y = tonumber(string.sub(mousedelta_y, 1, mousedelta_y:len()-3))
+        if right_stick_y>400 then
+            right_stick_y= (-(right_stick_y - 400))
+            if math.abs(right_stick_y)<40 then right_stick_y = 0 end
+            right_stick_y = right_stick_y/400
+        else
+           if math.abs(right_stick_y)<40 then right_stick_y = 0 end
+           right_stick_y = right_stick_y/400
+        end
+        mousedelta_y= string.sub(mousedelta_y, mousedelta_y:len()-2)
+    else
+        right_stick_y = 0
+    end
+    system.print("Right StickY  "..right_stick_y)
+
+    if mousedelta_y:len()>0 then
+        left_stick_y = tonumber(mousedelta_y)
+        if left_stick_y>400 then
+            left_stick_y= (-(left_stick_y - 400))
+            if math.abs(left_stick_y)<40 then left_stick_y = 0 end
+            left_stick_y = left_stick_y/400
+        else
+            if math.abs(left_stick_y)<40 then left_stick_y = 0 end
+            left_stick_y = left_stick_y/400
+        end
+    else
+        left_stick_y = 0
+    end
+    system.print("Left StickY  "..left_stick_y)
+    Nav.axisCommandManager:setThrottleCommand(axisCommandId.longitudinal, right_trigger)
+end

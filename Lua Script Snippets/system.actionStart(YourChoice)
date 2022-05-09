@@ -1,0 +1,6 @@
+if analog_input == 1 then
+    system.lockView(0)
+    analog_input = 0 else
+    system.lockView(1)
+    analog_input = 1
+end

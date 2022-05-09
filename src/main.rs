@@ -15,7 +15,7 @@ use enigo::{Enigo, Key, MouseControllable};
 use keyboard_query::{DeviceQuery, DeviceState};
 use spin_sleep::LoopHelper;
 const ANALOGPOLLRATE: u16 = 125; //in times per second, 125 = 8ms per loop iteration.
-const INPUTCONVERTFREQUENCY:u8 = 10; //in loop iterations, 9 = 10 loop iterations of e.g. 8ms =
+const INPUTCONVERTFREQUENCY:u8 = 10; //in loop iterations, 9 = 10 loop iterations, at 8ms per loop iteration, 10 = 80ms of additional delay!
 
 
 fn main() {
@@ -151,6 +151,7 @@ fn update_gamepad_list(gilrs: &Gilrs){
     file.write(format!("{:#?}", gamepads).as_bytes());
 }
 
+///Dead Code for now
 fn handle_config() -> Result<Config, String>{
     let mut builder = Config::builder()
         .add_source(File2::new("config", FileFormat::Toml));

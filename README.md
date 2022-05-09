@@ -15,14 +15,18 @@ The tool can be run whenever and looks for various game input devices, such as a
 The result is saved into the "device_list.txt". 
 If you use Input Devices of various kinds that are not supported yet, please run the tool once anyway and send me this file on Discord or the data inside here in a Github issue.
 Only then can I create mappings and further develop this tool for support.
+
 ---
+
 Once the tool is running, it will have a small terminal window open. Don't be scared by that and keep it open, I simply did not put in the work to make it a tray icon instead.
 If you want, I can get rid of it sometime. Your right CTRL key will toggle encoding and sending analog input.
 You will notice it is active if your mouse hops at the spot or your camera wiggles inside the game. 
 
 If this is active, your analog inputs **WILL** move your mouse cursor very violently, including camera movements. Therefore, a key ingame is needed to activate and deactivate the camera lock!
 It is intended to lock the camera ingame before activating the analog input with the right CTRL key. 
+
 ---
+
 Should the input generally work, but sometimes not, do not hesitate to tell me. This most likely means the send rate is still too high. I will make the send rate adjustable down the line.
 
 ## How does the input get into the game?

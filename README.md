@@ -1,7 +1,8 @@
 # DU_Analog_Inputs (WIP)
 ## Intro
 This is a small rust tool that allows sending **several** analog inputs to the game Dual Universe by encoding them into relative mouse movements.
-For Usage, at least read the "How to use this". If you want to know how it works and possibly improve it, see "How does the input get into the game?"
+For Usage, at least read the "How to use this". If you want to know how it works and possibly improve it, see "How does the input get into the game?".
+For any questions, feel free to hit me up on Discord via PM (ZarTaen#6409) or via the OSIN Discord Server https://discord.gg/B5fVQ7YKNM
 
 ## Working
 - Xbox Gamepad all Analog Axis
@@ -27,7 +28,7 @@ It is intended to lock the camera ingame before activating the analog input with
 
 ---
 
-Should the input generally work, but sometimes not, do not hesitate to tell me. This most likely means the send rate is still too high. I will make the send rate adjustable down the line.
+If the input generally works, but sometimes does not, do not hesitate to tell me. This most likely means the send rate is still too high. I will make the send rate adjustable down the line.
 
 ## How does the input get into the game?
 Every axis of a device is mapped to deliver a value between -1.0 and 1.0.

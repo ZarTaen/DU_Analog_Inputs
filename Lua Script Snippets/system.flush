@@ -1,14 +1,25 @@
-if (system.getArkTime()-lastMouseTime) > 0.016 then
-    local oldmousedeltax = mousedeltax
-    local oldmousedeltay = mousedeltay
+if (system.getArkTime()-lastMouseTime) > 0.004 then
+    oldmousedeltax = mousedeltax
+    oldmousedeltay = mousedeltay
     mousedeltax = system.getMouseDeltaX()
     mousedeltay = system.getMouseDeltaY()
-
-    if mousedeltax == 0 then
-        mousedeltax = oldmousedeltax
-    end
-    if mousedeltay == 0 then
-        mousedeltay = oldmousedeltay
-    end
     lastMouseTime = system.getArkTime()
 end
+
+if analog_input ==1 then
+    finalPitchInput = -left_stick_y
+    finalRollInput = right_stick_x
+    finalYawInput = -left_stick_x
+else
+    finalPitchInput = pitchInput
+    finalRollInput = rollInput
+    finalYawInput = yawInput
+end
+
+--brakeInput
+if analog_input == 1 then
+    brakeAcceleration = -left_trigger * (brakeSpeedFactor * constructVelocity + brakeFlatFactor * constructVelocityDir)
+else
+    brakeAcceleration = -brakeInput * (brakeSpeedFactor * constructVelocity + brakeFlatFactor * constructVelocityDir)
+end
+Nav:setEngineForceCommand('brake', brakeAcceleration)

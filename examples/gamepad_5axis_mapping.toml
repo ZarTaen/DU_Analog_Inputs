@@ -1,0 +1,7 @@
+[mapping]
+JoyX = 'XAxis1'
+CamY = 'YAxis2'
+TriggerL = 'LesserAxis2'
+TriggerR = 'LesserAxis1'
+JoyY = 'YAxis1'
+CamX = 'XAxis2'

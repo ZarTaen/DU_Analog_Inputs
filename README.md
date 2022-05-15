@@ -5,89 +5,111 @@ For Usage, at least read the "How to use this". If you want to know how it works
 For any questions, feel free to hit me up on Discord via PM (ZarTaen#6409) or via the OSIN Discord Server https://discord.gg/B5fVQ7YKNM
 
 ## Working
-- Xbox Gamepad all Analog Axis
+- Xbox Gamepad all Analog Axis for 5Axis and 6Axis (See Lua Script Snippets and examples)
 
 ## What to know before using it
-First, every Lua script that is supposed to work with this, has to be adapted. The files under "Lua Script Snippets" demonstrate how I built the support into my ship for testing purposes.
+First, every Lua script that is supposed to work with this has to be adapted. The files under "Lua Script Snippets" demonstrate how I built the support into my ship for testing purposes.
 There are most likely better ways and formulas, as well as preferences on a player by player basis, but I will leave this part mostly to the community.
 However, lets just say that the setup that I include as an example was adjusted by me to be as consistent as possible, framedrop or not. It is not perfect and feedback is appreciated.
 
-The tool can be run whenever and looks for various game input devices, such as an XBOX Gamepad. 
-The result is saved into the "device_list.txt". 
-If you use Input Devices of various kinds that are not supported yet, please run the tool once anyway and send me this file on Discord or the data inside here in a Github issue.
-Only then can I create mappings and further develop this tool for support.
+The tool can be run whenever and looks for various game input devices, such as an Xbox Gamepad. Connected devices will be listed in the terminal output, always.
+It is going to be fiddly to set it up. But once the setup is complete, it mostly works like a charm.
 
 ---
 
-Once the tool is running, it will have a small terminal window open. Don't be scared by that and keep it open, I simply did not put in the work to make it a tray icon instead.
-If you want, I can get rid of it sometime. Your right CTRL key will toggle encoding and sending analog input.
-You will notice it is active if your mouse hops at the spot or your camera wiggles inside the game. 
+Once the tool is running, it will have a small terminal window open. Don't be scared by that and keep it open, closing it will close the tool.
+If you want, I can get rid of it sometime. 
 
-If this is active, your analog inputs **WILL** move your mouse cursor very violently, including camera movements. Therefore, a key ingame is needed to activate and deactivate the camera lock!
-It is intended to lock the camera ingame before activating the analog input with the right CTRL key. 
+Your right CTRL key will toggle encoding and sending analog input. If this is active, your analog inputs **WILL** move your mouse cursor very violently, including camera movements, towards the bottom right by default. Therefore, a key ingame is needed to activate and deactivate the camera lock!
+It is intended to lock the camera ingame before activating the analog input with the right CTRL key. In the Lua example, this key is the boost activation key.
 
 ---
 
-If the input generally works, but sometimes does not, do not hesitate to tell me. This most likely means the send rate is still too high. I will make the send rate adjustable down the line.
+Should the inputs not work as expected after setting everything up correctly, dont hesitate to tell me and when I have time, we can troubleshoot it.
 
 ## How does the input get into the game?
-Every axis of a device is mapped to deliver a value between -1.0 and 1.0.
+Every axis of a device is mapped to deliver a value between -1.0 and 1.0, other than Analog Triggers, those are 0.0 to 1.0.
+
 Relative Mouse movement on Windows uses a signed 32 bit Integer value. This means, the maximum limit of relative mouse movement on windows is
-2147483647 Pixels at once. As a result, there are 10 digits that can be used for encoding, for one mouse delta direction.
+2147483647 Pixels at once. As a result, there are theoretically 31 bits available for encoding, minus 1 for the canary(explained in a minute).
 
-Therefore, the current encoding for an Xbox Gamepad works as follows:
+First, the axis have to be translated from float to a fitting integer range. By default, this is 0-63 for one side and 0-63 for another, for 6Axis.
+Axis that are exclusive (such as Left Stick X Axis, with left and right not possible at the same time), share that space, by doing the following:
 
-Mouse X-Axis:
-- Left Stick X-Axis 0 to -1.0 becomes 0 to 400
-- Left Stick X-Axis 0 to 1.0 becomes 401 to 800
-- Right Stick X-Axis 0 to -1.0 becomes 000xxx to 400xxx
-- Right Stick X-Axis 0 to 1.0 becomes 401xxx to 800xxx
-- Right Trigger Axis from 0 to 1.0 becomes 0xxxxxx to 40xxxxxx
+- Left Stick X-Axis 0 to -1.0 becomes 0 to 63 (left)
+- Left Stick X-Axis 0 to 1.0 becomes 64 to 127 (right)
 
-Mouse Y-Axis:
-- Left Stick Y-Axis 0 to -1.0 becomes 0 to 400
-- Left Stick Y-Axis 0 to 1.0 becomes 401 to 800
-- Right Stick Y-Axis 0 to -1.0 becomes 000xxx to 400xxx
-- Right Stick Y-Axis 0 to 1.0 becomes 401xxx to 800xxx
-- Left Trigger Axis from 0 to 1.0 becomes 0xxxxxx to 40xxxxxx
+Once this is done with all axis, they are added to one final mouse movement with bitshifting. The following is going to have bit representations for the maximum intended possible value:
 
-With this, the values are encoded. Now, the question is: why just 8 digits and not all 10? Well, an additional hurdle is that Dual Universe uses float for Mouse Delta for some god forsaken reason.
-This means that at high values in our range, the accuracy of the Left Stick would decrease, by not allowing 0, 1, 2, 3, 4 and so on, but rather only 0,8,16,24,32..
-As a consequence, there is a tradeoff for Trigger Accuracy and Left Stick Accuracy in the current mapping.
+Mouse X-Axis for 6Axis:
+* Canary bit at 2097152: 
+  * `1`0 0000 0000 0000 0000 0000
+* ZAxis1: 
+  * 10 0000 0000 0000 0`111 1111`
+* XAxis2: 
+  * 1`1 1111 11`00 0000 0111 1111
+* XAxis1: 
+  * 11 1111 11`11 1111 1`111 1111
 
-Okay, so the value is in the game, and everything can just be decoded, right? WRONG.
-The game is funny in that way. In order to have the best possible accuracy, its a good idea to transmit state, not changes.
-However, the game drops and doubles mouse inputs fairly unpredictably, based on the rate the inputs are sent to the game.
-This means, an input sequence for Mouse X-Axis can look like this:
+Mouse Y-Axis for 6Axis:
+* Canary bit at 2097152: 
+  * `1`0 0000 0000 0000 0000 0000
+* ZAxis2: 
+  * 10 0000 0000 0000 0`111 1111`
+* YAxis2: 
+  * 1`1 1111 11`00 0000 0111 1111
+* YAxis1: 
+  * 11 1111 11`11 1111 1`111 1111
 
-- 0.0
-- 20401`762`
-- 4080`3524`
-- 0.0
-- 20401`762`
-- 0.0
 
-The highlighted numbers show the values affected by the Left Stick in case of a doubled value.
+5Axis is slightly different, it uses bigger ranges for both XAxis and YAxis, at 0-127, uses 0.0-1.0 axis of triggers, and has overall 1 more bit.
 
-Therefore, 2 things had to be done:
-- Reduce the transmission limit to the game to get rid of doubles
-  - Doubled Values can **not** be corrected and results in an input such as Right Stick suddenly being decoded as Trigger Input as well!
-- Filter out the dropped Mouse Values
+Mouse X-Axis for 5Axis:
+* Canary bit at 4194304: 
+  * `1`00 0000 0000 0000 0000 0000
+* LesserAxis1: 
+  * 10 0000 0000 0000 00`11 1111`
+* XAxis2: 
+  * 1`11 1111 11`00 0000 0011 1111
+* XAxis1: 
+  * 111 1111 11`11 1111 11`11 1111
 
-**The send rate limit is where I need as much feedback as possible, to find a playable value.**
-Doubled Inputs simply can not be corrected unless filtered by using averages of inputs. It is not made better with the fact that the rate WILL vary from player to player, possibly based on framerate even.
+Mouse Y-Axis for 5Axis:
+* Canary bit at 4194304: 
+  * `1`00 0000 0000 0000 0000 0000
+* LesserAxis2: 
+  * 10 0000 0000 0000 00`11 1111`
+* YAxis2: 
+  * 1`11 1111 11`00 0000 0011 1111
+* YAxis1: 
+  * 111 1111 11`11 1111 11`11 1111
 
-Filtering 0.0s is fairly straightforward. A jitter of 1 Pixel for both Mouse Axis is applied everytime the tool sends an input, even if the input by the gamepad is 0.
-With deadzones, this is filtered out, and the game can filter out 0.0s as dropped mouse inputs as well.
+Now, everyone that paid attention closely, realises that these are not 31 bits. There is a good reason for that. The game is highly inconsistent when it comes to reading mouse inputs. Sometimes, it reads 0, and sometimes it doubles, triples or even quadruples the mouse input in a single reading.
+This by itself is not a problem. But the game also uses a 32 bit float to store the originally 32 bit integer input of the mouse. Floating points at higher values become highly inaccurate for our usecase. Anything above a certain amount of bits will end up in a loss of bits.
+Therefore, values that are a multiples of the intended value are dropped ingame, so are 0s, and we use the canary. The canary allows us to check whether the whole value has multiplied.
+
+Now, with the values encoded and a mouse input on the way, we are still not finished. While it is possible to ignore the multiplied and 0d inputs, if those become too many, the input will start feeling sluggish.
+This is why only the input state is transmitted. It allows to reduce the transmission rate considerably while still being fairly responsive. Basically, the game thinks your input is the old state, until it is updated.
+Something to mention: I tried simply dividing the multiplied inputs, but man oh man was it unpredictable as hell. I even saw .5s where none should be.
+
+**The send rate limit is where I need as much feedback as possible, to find a most commonly playable value.**
+Filtering 0.0s is straightforward: Every 0 input on our side is at least as big as the canary bit.
+Multiples are always at least a multiple of the canary bit. So, it is straightforward.
+
+Once the invalid mouse inputs are filtered, the whole float has to be converted to a bit string. There is a provided function in the Lua code snippets. The resulting bit string should be identical to the bit string we originally sent.
+With this in mind, all we need to do is to take the ranges as shown above, and take out the respective string slices. Then convert those to integer values, do the whole encoding process basically in reverse.
+At the end, the inputs end up as -1.0 to 0.0 to 1.0 again.
+
+## Working with Lua
+The Lua Script Snippets are mostly not suggestions. unit.start is a necessity, so is system.flush (other than the if blocks with analog_input inside or the time between checks, but at your own discretion).
+system.update contains the filtering logic and is mostly a necessity as well. The things that can be changed are the variable names and possibly cleaning up the logic, as long as it stays fundamentally the same.
+system.actionStart contains the Lua snippet to toggle the cameralock and simultanously the analog_input bool. 
+
+For something like Twinsticks, I recommend using 6Axis only. The provided Gamepad6Axis should in theory be working fine. Anything with more than 6 Axis will however not be possible without serious input resolution issues in the future.
 
 ## Todo
 - Gathering feedback for the send rate
-- Collecting Outputs for different game devices, such as HOTAS and co.
-  - Consequently, potentially adapting the input library currently in use for broader support
-- Creating Mappings for other input devices, based on the collected Outputs
 - Input device to keyboard mapping
-- More customizability
-- Make sendrate and pollrate adjustable
 
 ## I want to contribute!
 Feel free to do so. Especially for the Lua side of things, help is very appreciated. Do not hesitate to contact me either via Discord (ZarTaen#6409)

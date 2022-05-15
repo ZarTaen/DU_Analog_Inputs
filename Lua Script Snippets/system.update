@@ -1,0 +1,52 @@
+--6axis is active!
+if analog_input ==1 then
+    -- sort out doubled and tripled inputs
+    --local canary = 4194304    --5axis
+    local canary = 2097152      --6axis
+    if mousedeltax<=(canary*2) and mousedeltax>=canary then
+        oldmousedeltax = mousedeltax
+        counter = counter+1
+    elseif mousedeltax == 0 then
+        mousedeltax = oldmousedeltax
+        multiplecounter = multiplecounter+1
+    else
+        mousedeltax = oldmousedeltax
+        multiplecounter = multiplecounter+1
+    end
+    if mousedeltay<=(canary*2) and mousedeltay>=canary then
+        oldmousedeltay = mousedeltay
+        counter = counter+1
+    elseif mousedeltay == 0 then
+        mousedeltay = oldmousedeltay
+        multiplecounter = multiplecounter+1
+    else
+        mousedeltay = oldmousedeltay
+        multiplecounter = multiplecounter+1
+    end
+
+
+    if multiplecounter == 1000 or counter == 1000 then
+        counter = 0
+        multiplecounter = 0
+    end
+
+    --system.print("CounterRatio Counter/ Multiplecounter: "..((counter/multiplecounter)))
+
+    mousedeltax_bitstring = getCleanBitstring(mousedeltax)
+    --system.print(mousedeltax_bitstring)
+    if mousedeltax_bitstring ~= nil then
+        right_trigger, left_stick_x, right_stick_x = gamepadGet6Axis(mousedeltax_bitstring)
+    end
+    mousedeltay_bitstring = getCleanBitstring(mousedeltay)
+    --system.print(mousedeltay_bitstring)
+    if mousedeltay_bitstring ~= nil then
+        left_trigger, left_stick_y, right_stick_y = gamepadGet6Axis(mousedeltay_bitstring)
+    end
+    --system.print("Left Trigger  "..left_trigger)
+    --system.print("Left Stick X "..left_stick_x)
+    --system.print("Left Stick Y "..left_stick_y)
+    --system.print("Right Trigger  "..right_trigger)
+    --system.print("Right Stick X "..right_stick_x)
+    --system.print("Right Stick Y "..right_stick_y)
+    Nav.axisCommandManager:setThrottleCommand(axisCommandId.longitudinal, right_trigger)
+end

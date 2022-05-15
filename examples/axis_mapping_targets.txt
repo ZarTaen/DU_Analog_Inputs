@@ -1,0 +1,9 @@
+"XAxis1"
+"XAxis2"
+"YAxis1"
+"YAxis2"
+"ZAxis1" 6Axis only
+"ZAxis2" 6Axis only
+"LesserAxis1" 5Axis only
+"LesserAxis2" 5Axis only
+"Unmapped" Maps to nothing. Useful if you do not want to remove an entry from the mapping.

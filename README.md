@@ -101,15 +101,20 @@ With this in mind, all we need to do is to take the ranges as shown above, and t
 At the end, the inputs end up as -1.0 to 0.0 to 1.0 again.
 
 ## Working with Lua
-The Lua Script Snippets are mostly not suggestions. unit.start is a necessity, so is system.flush (other than the if blocks with analog_input inside or the time between checks, but at your own discretion).
-system.update contains the filtering logic and is mostly a necessity as well. The things that can be changed are the variable names and possibly cleaning up the logic, as long as it stays fundamentally the same.
-system.actionStart contains the Lua snippet to toggle the cameralock and simultanously the analog_input bool. 
+The code for unit.start and system.flush are necessary. You need the code snippets for: 
+-Receiving mouse input and saving the value. (unit.start and system.flush)
+-Filtering the mouse input and assigning the input axis (unit.start and system.update)
+-Assigning the input axis to the ship controls (system.flush)
+-Switching between classic controls and analog input (system.actionStart(YourChoice))
 
 For something like Twinsticks, I recommend using 6Axis only. The provided Gamepad6Axis should in theory be working fine. Anything with more than 6 Axis will however not be possible without serious input resolution issues in the future.
 
+Thanks to Davemane42 for doing the autoconfig based on the flying default. I modified it slightly to include more inverts and also more generic naming. It is a drop-in replacement for the NQ default flying script.
+
+
 ## Todo
 - Gathering feedback for the send rate
-- Input device to keyboard mapping
+- Input device to keyboard mapping (including Right Ctrl, I might consider double mappings so analog input toggle can be done with 1 mapped button)
 
 ## I want to contribute!
 Feel free to do so. Especially for the Lua side of things, help is very appreciated. Do not hesitate to contact me either via Discord (ZarTaen#6409)

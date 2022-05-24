@@ -1,4 +1,7 @@
-# DU_Analog_Inputs (WIP)
+# DU_Analog_Inputs
+## Disclaimer
+You can map Xbox Gamepad buttons directly ingame and probably other devices as well. I learned this after developing the whole key mapping part. Touché NQ.
+
 ## Intro
 This is a small rust tool that allows sending **several** analog inputs to the game Dual Universe by encoding them into relative mouse movements.
 For Usage, at least read the "How to use this". If you want to know how it works and possibly improve it, see "How does the input get into the game?".

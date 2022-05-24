@@ -20,13 +20,50 @@ It is going to be fiddly to set it up. But once the setup is complete, it mostly
 Once the tool is running, it will have a small terminal window open. Don't be scared by that and keep it open, closing it will close the tool.
 If you want, I can get rid of it sometime. 
 
-Your right CTRL key will toggle encoding and sending analog input. If this is active, your analog inputs **WILL** move your mouse cursor very violently, including camera movements, towards the bottom right by default. Therefore, a key ingame is needed to activate and deactivate the camera lock!
-It is intended to lock the camera ingame before activating the analog input with the right CTRL key. In the Lua example, this key is the boost activation key.
+Alt+Ctrl+F12 will toggle encoding and send analog input. If this is active, your analog inputs **WILL** move your mouse cursor very violently, including camera movements, towards the bottom right by default. Therefore, a key ingame is needed to activate and deactivate the camera lock!
+It is intended to lock the camera ingame before activating the analog input with Alt+Ctrl+F12, however analog input by default has this mapped to the start button for an Xbox Controller. In the Lua example, the additional key is the boost activation key.
+
+NEVER close the tool while mapped buttons are pressed! This will result in keys getting stuck! The deactivation with Alt+Ctrl+F12 however is not affected by this.
 
 ---
 
 Should the inputs not work as expected after setting everything up correctly, dont hesitate to tell me and when I have time, we can troubleshoot it.
 
+## Mapping Files Explained
+Axis Example:
+```toml 
+[mapping.0]
+CamY = 'YAxis2'
+TriggerL = 'ZAxis2'
+JoyY = 'YAxis1'
+CamX = 'XAxis2'
+JoyX = 'XAxis1'
+TriggerR = 'ZAxis1'
+```
+The first line of each toml block always has to be `[mapping.x]`, where x stands for your device ID. You can have several of those blocks, for different ids, but not the same id! The left side is the corresponding input name of your device. This can be found when using and pressing them in debug mode.
+The right side of the input names are the input results. For the `axis_mapping.toml` file, those have to be one of the Axis, as found in `/examples/axis_mapping_targets.txt`.
+The same things as the Axis file apply to the `key_mapping.toml`, however, instead of Axis to map to, it will accept a comma separated key code list. 
+
+KeyMap Example:
+```toml
+[mapping.0]
+MenuL = '18,123,9'
+BumperL = '17'
+MenuR = '18,123,66'
+```
+This means that you can map a single button to key combinations such as alt+j! Or the whole keyboard, whatever floats your boat.
+The default key mappings are the most basic thing for Xbox Controllers: 
+- Activating and deactivating the Analog Input, by pressing Alt+Ctrl+F12 and B.
+- Activating and deactivating the Analog Input when trying to tab, by pressing Alt+Ctrl+F12 + Tab.
+- Left Bumper is Ctrl, for default brake
+
+I really recommend for the community to create mappings for various devices and rely on each other, as it is essentially impossible to do mappings for devices you dont own,
+and it is all preference anyway.
+After deliberating a long time, that is also why I decided not to include a fully key-mapped Xbox Gamepad.
+
+For Keycodes see https://boostrobotics.eu/windows-key-codes/.
+
+Beware that some keycodes will not be key specific (Ctrl 163 is changed to Ctrl only for example)
 ## How does the input get into the game?
 Every axis of a device is mapped to deliver a value between -1.0 and 1.0, other than Analog Triggers, those are 0.0 to 1.0.
 
@@ -111,10 +148,11 @@ For something like Twinsticks, I recommend using 6Axis only. The provided Gamepa
 
 Thanks to Davemane42 for doing the autoconfig based on the flying default. I modified it slightly to include more inverts and also more generic naming. It is a drop-in replacement for the NQ default flying script.
 
-
 ## Todo
 - Gathering feedback for the send rate
-- Input device to keyboard mapping (including Right Ctrl, I might consider double mappings so analog input toggle can be done with 1 mapped button)
+- User-Friendliness
+- ~~Input device to keyboard mapping (including Right Ctrl, I might consider double mappings so analog input toggle can be done with 1 mapped button)~~
+  - ~~Implemented multidevice+multikey mapping~~
 
 ## I want to contribute!
 Feel free to do so. Especially for the Lua side of things, help is very appreciated. Do not hesitate to contact me either via Discord (ZarTaen#6409)

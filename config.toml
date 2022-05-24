@@ -1,5 +1,4 @@
 device_pollrate = "250" #This is the pollrate per second to check on device state.
 input_sendrate_division = "6" #This value tells how many polls to wait before sending an input to mouse.
-device_number ="0" #This value is the device number at the very top of the corresponding device inside device_list.txt
 debug = true #This value prints debug information to the console to enumerate all input codes.
 sixaxis = true #This value toggles between sixaxis and 5axis encoding. Sixaxis is used when true

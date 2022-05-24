@@ -1,6 +1,7 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::fmt;
 use std::fmt::{Formatter};
+use std::num::ParseIntError;
 use std::ops::Neg;
 use std::str::FromStr;
 use std::sync::mpsc::Sender;
@@ -9,7 +10,7 @@ use std::sync::mpsc::Sender;
 use stick::{Controller, Event, Listener};
 use std::task::Poll;
 use std::task::Poll::{Pending};
-use enigo::{Enigo, MouseControllable};
+use enigo::{Enigo, Key, KeyboardControllable, MouseControllable};
 use serde::{Serialize, Deserialize};
 use serde_with::{serde_as, DisplayFromStr};
 use toml::Value;
@@ -18,7 +19,6 @@ pub(crate) struct GameInputs{
     pub(crate) listener: Listener,
     pub(crate) controllers: Vec<Controller>,
     pub(crate) debug: bool,
-    pub(crate) active_device: u64,
     pub(crate) transmitter: Sender<(u64, Event)>
 }
 
@@ -31,12 +31,7 @@ impl GameInputs{
             controller.id(),
             controller.name(),
         );
-        if controller.id() == self.active_device as u64 {
-            println!("Set Device #{} as active.", controller.id());
-            self.controllers.push(controller);
-        }else{
-            println!("Ignored Device #{} ", controller.id());
-        }
+        self.controllers.push(controller);
         Pending
     }
     pub(crate) fn event_match(&mut self, id: usize, event: Event) -> Poll<Exit>{
@@ -272,9 +267,59 @@ pub(crate) fn wrap_events(event: Event) -> Result<(EventWrap, Option<Value>), ()
 #[serde_as]
 #[derive(Debug, Serialize, Deserialize)]
 pub(crate) struct AxisMap {
-    #[serde_as(as = "HashMap<DisplayFromStr, DisplayFromStr>")]
-    pub(crate) mapping: HashMap<EventWrap, AxisVariations>
+    #[serde_as(as = "HashMap<DisplayFromStr, HashMap<DisplayFromStr, DisplayFromStr>>")]
+    pub(crate) mapping: HashMap<u64, HashMap<EventWrap, AxisVariations>>
 }
+
+#[serde_as]
+#[derive(Debug, Serialize, Deserialize)]
+pub(crate) struct KeyMap {
+    #[serde_as(as = "HashMap<DisplayFromStr, HashMap<DisplayFromStr, DisplayFromStr>>")]
+    pub(crate) mapping: HashMap<u64, HashMap<EventWrap, KeyList>>
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub(crate) struct KeyList{
+    pub(crate) key_list : Vec<u16>
+}
+
+impl fmt::Display for KeyList{
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        let mut buffer =  String::new();
+        for i in &self.key_list{
+            buffer.push_str(&i.to_string());
+            buffer.push_str(",");
+        }
+        buffer.pop();
+        write!(f, "{}", buffer)
+    }
+}
+
+pub(crate) struct KeyListFromStrError{}
+
+impl fmt::Display for KeyListFromStrError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        f.write_str("KeyListFromStrError")
+    }
+}
+
+impl FromStr for KeyList {
+    type Err = KeyListFromStrError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let mut vector = vec![];
+        for i in s.split(','){
+            vector.push(match i.parse::<u16>(){
+                Ok(t) => t,
+                Err(_) => return Err(KeyListFromStrError {}),
+            })
+        }
+        Ok(KeyList{
+            key_list: vector
+        })
+    }
+}
+
 
 #[derive(Serialize, Deserialize, Debug)]
 pub(crate) enum AxisVariations{
@@ -658,6 +703,55 @@ impl SelfMadeAxis{
             *multiplier = multiplier.neg();
             0.0
         }
+    }
+}
+
+#[derive(Debug)]
+pub(crate) struct KeyPressHandler{
+    pub(crate) current_key_state: HashSet<u16>,
+    pub(crate) current_off_key_state: HashSet<u16>,
+    total_key_state: HashSet<u16>
+}
+
+struct KeyboardPlaceholder {}
+
+impl KeyPressHandler{
+    pub fn new() -> KeyPressHandler{
+       KeyPressHandler{
+           current_key_state: HashSet::new(),
+           current_off_key_state: HashSet::new(),
+           total_key_state: HashSet::new()
+       }
+    }
+
+    pub(crate) fn update_key_presses(&mut self, event: (Vec<u16>, bool)){
+        match event.1{
+            true => {
+                for i in event.0{
+                    self.current_key_state.insert(i);
+                }
+            }
+            false => {
+                for i in event.0{
+                    self.current_off_key_state.insert(i);
+                }
+            }
+        }
+        for i in self.current_off_key_state.clone(){
+            if self.current_key_state.get(&i).is_some(){
+                self.current_off_key_state.remove(&i);
+            }
+        }
+    }
+    pub(crate) fn send_key_presses(&mut self, keyboard: &mut Enigo){
+        for i in &self.current_off_key_state{
+            keyboard.key_up(Key::Raw(i.clone()));
+        }
+        for i in &self.current_key_state{
+            keyboard.key_down(Key::Raw(i.clone()))
+        }
+        self.current_key_state.clear();
+        self.current_off_key_state.clear();
     }
 }
 

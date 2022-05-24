@@ -4,7 +4,7 @@ You can map Xbox Gamepad buttons directly ingame and probably other devices as w
 
 ## Intro
 This is a small rust tool that allows sending **several** analog inputs to the game Dual Universe by encoding them into relative mouse movements.
-For Usage, at least read the "How to use this". If you want to know how it works and possibly improve it, see "How does the input get into the game?".
+For usage, at least read the "What to know before using it" and "Mapping Files Explained". If you want to know how it works and possibly improve it, see "How does the input get into the game?".
 For any questions, feel free to hit me up on Discord via PM (ZarTaen#6409) or via the OSIN Discord Server https://discord.gg/B5fVQ7YKNM
 
 ## Working

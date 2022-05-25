@@ -159,7 +159,7 @@ Thanks to Davemane42 for doing the autoconfig based on the flying default. I mod
 
 ## I want to contribute!
 Feel free to do so. Especially for the Lua side of things, help is very appreciated. Do not hesitate to contact me either via Discord (ZarTaen#6409)
-or over Github.
+or over Github. You can also contribute by simply trying it out, verifying the device works in Windows in general but is not recognized by the used library, etc. Once I can confirm that a specific device is not working as intended, I can work on it.
 
 ## This is too complicated, I want to complain!
 I too like to complain in my spare time. For complaints please open an issue or add to an existing one. If it is not solvable by me, pester NQ with "Analog Inputs When".

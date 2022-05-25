@@ -7,7 +7,7 @@ This is a small rust tool that allows sending **several** analog inputs to the g
 For usage, at least read the "What to know before using it" and "Mapping Files Explained". If you want to know how it works and possibly improve it, see "How does the input get into the game?".
 For any questions, feel free to hit me up on Discord via PM (ZarTaen#6409) or via the OSIN Discord Server https://discord.gg/B5fVQ7YKNM
 
-## Working
+## Guaranteed Working
 - Xbox Gamepad all Analog Axis for 5Axis and 6Axis (See Lua Script Snippets and examples)
 
 ## What to know before using it
@@ -28,9 +28,9 @@ It is intended to lock the camera ingame before activating the analog input with
 
 NEVER close the tool while mapped buttons are pressed! This will result in keys getting stuck! The deactivation with Alt+Ctrl+F12 however is not affected by this.
 
----
-
 Should the inputs not work as expected after setting everything up correctly, dont hesitate to tell me and when I have time, we can troubleshoot it.
+
+---
 
 ## Mapping Files Explained
 Axis Example:

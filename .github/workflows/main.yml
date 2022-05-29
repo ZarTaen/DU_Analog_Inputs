@@ -16,7 +16,7 @@ jobs:
       - name: Integrate VCPKG
         run: vcpkg integrate install
       - name: SDL2 Install
-        run: vcpkg install sdl2
+        run: vcpkg install sdl2:x64-windows-static-md
       - name: Compile
         uses: actions-rs/cargo@v1
         with:
@@ -28,8 +28,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v2.0.9
-          release_name: v2.0.9
+          tag_name: v2.0.10
+          release_name: v2.0.10
           draft: true
           prerelease: false
       - name: Upload release
@@ -39,7 +39,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: target\release\DU_analog_inputs.exe
-          asset_name: DU_Analog_Inputs_v209.exe
+          asset_name: DU_Analog_Inputs_v2010.exe
           asset_content_type: application/zip
       - name: Publish release
         uses: eregon/publish-release@v1

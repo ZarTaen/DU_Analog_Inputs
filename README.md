@@ -160,7 +160,7 @@ Thanks to Davemane42 for doing the autoconfig based on the flying default. I mod
 
 ## Change in latest Version
 - Changed input backend to SDL2 for better device compabitility.
-- Changed analog input toggle key to `^` (220) and `Right Ctrl` (163)
+- Changed analog input toggle key to **either** `^` (220) and `Right Ctrl` (163)
 
 ## For Developers and Self-Compile Fans
 This project uses the VCPKG approach under "Windows, Linux and macOS with vcpkg" to use SDL2 without .dll. Find more information under:

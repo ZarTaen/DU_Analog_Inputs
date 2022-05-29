@@ -1,4 +1,7 @@
 # DU_Analog_Inputs
+## Disclaimer
+You can map Xbox Gamepad buttons directly ingame and probably other devices as well. I learned this after developing the whole key mapping part. Touché NQ.
+
 ## Intro
 This is a Rust tool that allows sending **several** analog inputs to the game Dual Universe (DU) by encoding them into relative mouse movements.
 For usage, at least read the "Usage". If you want to know how it works and possibly improve it, see "How does the input get into the game?".
@@ -27,7 +30,6 @@ Should the inputs not work as expected after setting everything up correctly, do
 
 ## Mapping Files Explained
 Axis Example with Xbox Gamepad GUID:
-
 ```toml
 [mapping.030000005e040000ff02000000007200]
 0 = 'XAxis1'
@@ -162,7 +164,7 @@ Thanks to Davemane42 for doing the autoconfig based on the flying default. I mod
 
 ## I want to contribute!
 Feel free to do so. Especially for the Lua side of things, help is very appreciated. Do not hesitate to contact me either via Discord (ZarTaen#6409)
-or over Github.
+or over Github. You can also contribute by simply trying it out, verifying the device works in Windows in general but is not recognized by the used library, etc. Once I can confirm that a specific device is not working as intended, I can work on it.
 
 A BIG THANKS TO Blazemonger and Davemane42 for help with testing!
 

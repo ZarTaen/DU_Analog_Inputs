@@ -15,6 +15,10 @@ jobs:
           toolchain: stable
       - uses: actions-rs/cargo@v1
         with:
+          command: install
+          args: cargo-vcpkg
+      - uses: actions-rs/cargo@v1
+        with:
           command: build
           args: --release --all-features
       - name: Github Rusty Release
@@ -23,8 +27,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v2.0.0
-          release_name: v2.0.0 More
+          tag_name: v2.0.1
+          release_name: v2.0.1 More
           draft: true
           prerelease: false
       - name: Upload release
@@ -34,7 +38,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: target\release\DU_analog_inputs.exe
-          asset_name: DU_Analog_Inputs_v200.exe
+          asset_name: DU_Analog_Inputs_v201.exe
           asset_content_type: application/zip
       - name: Publish release
         uses: eregon/publish-release@v1

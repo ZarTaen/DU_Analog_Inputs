@@ -9,6 +9,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Install VCPKG
+        run: |
+          git clone https://github.com/Microsoft/vcpkg.git vcp
+          vcp\bootstrap-vcpkg.bat
+          - name: Set env
+            shell: bash
+            run: |
+              echo "VCPKG_ROOT=${{ github.workspace }}\vcp" >> $GITHUB_ENV
       - name: Compile
         uses: actions-rs/toolchain@v1
         with:

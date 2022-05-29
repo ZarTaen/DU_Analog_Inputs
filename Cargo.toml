@@ -1,6 +1,6 @@
 [package]
 name = "DU_analog_inputs"
-version = "2.0.5"
+version = "2.0.6"
 #I effed up by thinking anything after 1.0 will not break the files, but welp.
 edition = "2021"
 authors = ["ZarTaen <zartaen@gmail.com>"]
@@ -13,12 +13,10 @@ enigo = "0.0.14"
 spin_sleep = "0.3.7"
 keyboard_query = "0.1.0"
 humantime = "2.1.0"
-stick = "0.12.4"
-pasts = "0.8.0"
 serde = { version = "1.0.137", features = ["derive"] }
 serde_with  = "1.13.0"
 toml = "0.5.9"
-flume="0.10.12"
+flume ="0.10.12"
 sdl2-sys = "0.35.2"
 
 [dependencies.sdl2]

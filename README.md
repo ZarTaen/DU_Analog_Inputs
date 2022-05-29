@@ -145,10 +145,10 @@ At the end, the inputs end up as -1.0 to 0.0 to 1.0 again.
 
 ## Working with Lua
 The code for unit.start and system.flush are necessary. You need the code snippets for: 
--Receiving mouse input and saving the value. (unit.start and system.flush)
--Filtering the mouse input and assigning the input axis (unit.start and system.update)
--Assigning the input axis to the ship controls (system.flush)
--Switching between classic controls and analog input (system.actionStart(YourChoice))
+- Receiving mouse input and saving the value. (unit.start and system.flush)
+- Filtering the mouse input and assigning the input axis (unit.start and system.update)
+- Assigning the input axis to the ship controls (system.flush)
+- Switching between classic controls and analog input (system.actionStart(YourChoice))
 
 For something like Twinsticks, I recommend using 6Axis only. The provided Gamepad6Axis should in theory be working fine. Anything with more than 6 Axis will however not be possible without serious input resolution issues in the future.
 

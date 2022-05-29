@@ -9,14 +9,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Install VCPKG
+      - name: Install vcpkg
         run: |
           git clone https://github.com/Microsoft/vcpkg.git vcp
           vcp\bootstrap-vcpkg.bat
-          - name: Set env
-            shell: bash
-            run: |
-              echo "VCPKG_ROOT=${{ github.workspace }}\vcp" >> $GITHUB_ENV
+      - name: Set env
+        shell: bash
+        run: |
+          echo "VCPKG_ROOT=${{ github.workspace }}\vcp" >> $GITHUB_ENV
       - name: Compile
         uses: actions-rs/toolchain@v1
         with:
@@ -35,8 +35,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v2.0.1
-          release_name: v2.0.1 More
+          tag_name: v2.0.3
+          release_name: v2.0.3 More
           draft: true
           prerelease: false
       - name: Upload release
@@ -46,7 +46,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: target\release\DU_analog_inputs.exe
-          asset_name: DU_Analog_Inputs_v201.exe
+          asset_name: DU_Analog_Inputs_v203.exe
           asset_content_type: application/zip
       - name: Publish release
         uses: eregon/publish-release@v1

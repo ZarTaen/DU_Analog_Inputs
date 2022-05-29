@@ -13,8 +13,10 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-      - name: VCPKG
+      - name: Integrate VCPKG
         run: vcpkg integrate install
+      - name: SDL2 Install
+        run: vcpkg install sdl2
       - name: Compile
         uses: actions-rs/cargo@v1
         with:

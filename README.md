@@ -162,6 +162,10 @@ Thanks to Davemane42 for doing the autoconfig based on the flying default. I mod
 - Changed input backend to SDL2 for better device compabitility.
 - Changed analog input toggle key to `^` (220) and `Right Ctrl` (163)
 
+## For Developers and Self-Compile Fans
+This project uses the VCPKG approach under "Windows, Linux and macOS with vcpkg" to use SDL2 without .dll. Find more information under:
+https://github.com/Rust-SDL2/rust-sdl2
+
 ## I want to contribute!
 Feel free to do so. Especially for the Lua side of things, help is very appreciated. Do not hesitate to contact me either via Discord (ZarTaen#6409)
 or over Github. You can also contribute by simply trying it out, verifying the device works in Windows in general but is not recognized by the used library, etc. Once I can confirm that a specific device is not working as intended, I can work on it.

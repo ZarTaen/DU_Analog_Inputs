@@ -1,7 +1,7 @@
 [mapping]
-JoyX = 'XAxis1'
-CamY = 'YAxis2'
-TriggerL = 'LesserAxis2'
-TriggerR = 'LesserAxis1'
-JoyY = 'YAxis1'
-CamX = 'XAxis2'
+0 = 'XAxis1'
+3 = 'YAxis2'
+4 = 'LesserAxis2'
+5 = 'LesserAxis1'
+1 = 'YAxis1'
+2 = 'XAxis2'

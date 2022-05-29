@@ -3,9 +3,10 @@ use std::fs::File;
 use std::io::{BufReader, Read, Write};
 use config::{Config, FileFormat};
 use config::File as File2;
+use sdl2::controller::{Axis, Button};
 use crate::helpers::open_file;
-use crate::input_datastructures::{AxisVariations, AxisMap, EventWrap, KeyList};
-use crate::{KeyMap, log_write, read_file};
+use crate::input_datastructures::{AxisVariations, AxisMap, KeyList};
+use crate::{gamepad_axis_number, gamepad_button_number, KeyMap, log_write, read_file};
 
 const DEFAULTCONFIGSTRING:&str = r#"device_pollrate = "250" #This is the pollrate per second to check on device state.
 input_sendrate_division = "6" #This value tells how many polls to wait before sending an input to mouse.
@@ -37,7 +38,7 @@ pub(crate) fn handle_config() -> Result<HashMap<String,String>, String>{
     };
     let sets= vec!["device_pollrate","input_sendrate_division", "debug", "sixaxis"];
     if settings.len()==0{
-        file.write(DEFAULTCONFIGSTRING.as_bytes());
+        file.write(DEFAULTCONFIGSTRING.as_bytes()).ok();
         return handle_config();
     }
     for i in &sets {
@@ -88,27 +89,28 @@ pub(crate) fn axis_mapping_config(logfile: &mut File) -> Result<AxisMap, String>
     return match toml::from_str::<AxisMap>(&*a) {
         Ok(map) => {
             if map.mapping.len() == 0 {
-                File::create(AXISMAPPINGNAME);
+                File::create(AXISMAPPINGNAME).ok();
                 file = open_file(AXISMAPPINGNAME);
                 let mut new_map = AxisMap {
                     mapping: HashMap::new()
                 };
                 let mut device_map = HashMap::new();
                 //Push Xbox Gamepad Mappings.
-                device_map.insert(EventWrap::JoyX, AxisVariations::XAxis1);
-                device_map.insert(EventWrap::JoyY, AxisVariations::YAxis1);
-                device_map.insert(EventWrap::CamX, AxisVariations::XAxis2);
-                device_map.insert(EventWrap::CamY, AxisVariations::YAxis2);
-                device_map.insert(EventWrap::TriggerL, AxisVariations::ZAxis2);
-                device_map.insert(EventWrap::TriggerR, AxisVariations::ZAxis1);
-                new_map.mapping.insert(0, device_map);
+                device_map.insert(gamepad_axis_number(Axis::LeftX), AxisVariations::XAxis1);
+                device_map.insert(gamepad_axis_number(Axis::LeftY), AxisVariations::YAxis1);
+                device_map.insert(gamepad_axis_number(Axis::RightX), AxisVariations::XAxis2);
+                device_map.insert(gamepad_axis_number(Axis::RightY), AxisVariations::YAxis2);
+                device_map.insert(gamepad_axis_number(Axis::TriggerLeft), AxisVariations::ZAxis2);
+                device_map.insert(gamepad_axis_number(Axis::TriggerRight), AxisVariations::ZAxis1);
+                //Uses the GUID
+                new_map.mapping.insert("030000005e040000ff02000000007200".to_string(), device_map);
                 let serialized = match toml::to_string_pretty(&new_map) {
                     Ok(t) => t,
                     Err(e) => {
                         return Err(e.to_string())
                     }
                 };
-                file.write(&*serialized.into_bytes());
+                file.write(&*serialized.into_bytes()).ok();
                 axis_mapping_config(logfile)
             } else {
                 //Lmao, your own fault if you fail something in the mapping. But if its valid, its valid.
@@ -117,20 +119,20 @@ pub(crate) fn axis_mapping_config(logfile: &mut File) -> Result<AxisMap, String>
         },
         Err(_) => {
             log_write(logfile,"Error", &format!("Invalid Mapping. {} has been reset.",AXISMAPPINGNAME));
-            File::create(AXISMAPPINGNAME);
+            File::create(AXISMAPPINGNAME).ok();
             file = open_file(AXISMAPPINGNAME);
             let mut new_map = AxisMap {
                 mapping: HashMap::new()
             };
             let mut device_map = HashMap::new();
             //Push Xbox Gamepad Mappings.
-            device_map.insert(EventWrap::JoyX, AxisVariations::XAxis1);
-            device_map.insert(EventWrap::JoyY, AxisVariations::YAxis1);
-            device_map.insert(EventWrap::CamX, AxisVariations::XAxis2);
-            device_map.insert(EventWrap::CamY, AxisVariations::YAxis2);
-            device_map.insert(EventWrap::TriggerL, AxisVariations::ZAxis2);
-            device_map.insert(EventWrap::TriggerR, AxisVariations::ZAxis1);
-            new_map.mapping.insert(0, device_map);
+            device_map.insert(gamepad_axis_number(Axis::LeftX), AxisVariations::XAxis1);
+            device_map.insert(gamepad_axis_number(Axis::LeftY), AxisVariations::YAxis1);
+            device_map.insert(gamepad_axis_number(Axis::RightX), AxisVariations::XAxis2);
+            device_map.insert(gamepad_axis_number(Axis::RightY), AxisVariations::YAxis2);
+            device_map.insert(gamepad_axis_number(Axis::TriggerLeft), AxisVariations::ZAxis2);
+            device_map.insert(gamepad_axis_number(Axis::TriggerRight), AxisVariations::ZAxis1);
+            new_map.mapping.insert("030000005e040000ff02000000007200".to_string(), device_map);
             let serialized = match toml::to_string_pretty(&new_map) {
                 Ok(t) => t,
                 Err(e) => {
@@ -141,7 +143,7 @@ pub(crate) fn axis_mapping_config(logfile: &mut File) -> Result<AxisMap, String>
                 Ok(t) => t,
                 Err(e) => return Err(e.to_string())
             };
-            file.write(&*serialized.as_bytes());
+            file.write(&*serialized.as_bytes()).ok();
             axis_mapping_config(logfile)
         }
     };
@@ -163,35 +165,28 @@ pub(crate) fn key_mapping_config(logfile: &mut File) -> Result<KeyMap, String>{
     return match toml::from_str::<KeyMap>(&*a) {
         Ok(map) => {
             if map.mapping.len() == 0 {
-                File::create(KEYMAPPINGNAME);
+                File::create(KEYMAPPINGNAME).ok();
                 file = open_file(KEYMAPPINGNAME);
                 let mut new_map = KeyMap {
                     mapping: HashMap::new()
                 };
                 let mut hashy_map = HashMap::new();
                 //Push Xbox Gamepad Mappings.
-                //new_map.mapping.insert(EventWrap::BumperL, );
-                hashy_map.insert(EventWrap::BumperR, KeyList{ key_list: vec![18] });
-                //new_map.mapping.insert(EventWrap::Left, );  //D-Pad Left
-                //new_map.mapping.insert(EventWrap::Right, ); //D-Pad Right
-                hashy_map.insert(EventWrap::Up, KeyList{ key_list: vec![82] });    //D-Pad Up
-                hashy_map.insert(EventWrap::Down, KeyList{ key_list: vec![84] });  //D-Pad Down
-                //new_map.mapping.insert(EventWrap::Joy, );   //Left Stick
-                //new_map.mapping.insert(EventWrap::Cam, );   //Right Stick
-                hashy_map.insert(EventWrap::MenuR, KeyList{ key_list:vec![163, 66] }); //Start
-                hashy_map.insert(EventWrap::MenuL, KeyList{ key_list:vec![163, 9] }); //Second Center Button left
-                hashy_map.insert(EventWrap::ActionH, KeyList{ key_list: vec![88] }); //X
-                //new_map.mapping.insert(EventWrap::ActionB, ); //B
-                //new_map.mapping.insert(EventWrap::ActionV, ); //Y
-                //new_map.mapping.insert(EventWrap::ActionA, ); //A
-                new_map.mapping.insert(0, hashy_map);
+                hashy_map.insert(gamepad_button_number(Button::RightShoulder), KeyList{ key_list: vec![18] });
+                hashy_map.insert(gamepad_button_number(Button::LeftShoulder), KeyList{ key_list: vec![17] });
+                hashy_map.insert(gamepad_button_number(Button::DPadUp), KeyList{ key_list: vec![82] });    //D-Pad Up
+                hashy_map.insert(gamepad_button_number(Button::DPadDown), KeyList{ key_list: vec![84] });  //D-Pad Down
+                hashy_map.insert(gamepad_button_number(Button::Start), KeyList{ key_list:vec![220, 66] }); //Start
+                hashy_map.insert(gamepad_button_number(Button::Back), KeyList{ key_list:vec![220, 9] }); //Second Center Button left
+                hashy_map.insert(gamepad_button_number(Button::X), KeyList{ key_list: vec![88] }); //X
+                new_map.mapping.insert("030000005e040000ff02000000007200".to_string(), hashy_map);
                 let serialized = match toml::to_string_pretty(&new_map) {
                     Ok(t) => t,
                     Err(e) => {
                         return Err(e.to_string())
                     }
                 };
-                file.write(&*serialized.into_bytes());
+                file.write(&*serialized.into_bytes()).ok();
                 key_mapping_config(logfile)
             } else {
                 //Lmao, your own fault if you fail something in the mapping. But if its valid, its valid.
@@ -200,27 +195,19 @@ pub(crate) fn key_mapping_config(logfile: &mut File) -> Result<KeyMap, String>{
         },
         Err(_) => {
             log_write(logfile,"Error", &format!("Invalid Mapping. {} has been reset.",KEYMAPPINGNAME));
-            File::create(KEYMAPPINGNAME);
+            File::create(KEYMAPPINGNAME).ok();
             file = open_file(KEYMAPPINGNAME);
             let mut new_map = KeyMap {
                 mapping: HashMap::new()
             };
             let mut hashy_map = HashMap::new();
-            //Push Xbox Gamepad Mappings.
-            hashy_map.insert(EventWrap::BumperL, KeyList{ key_list: vec![17] });
-            //hashy_map.insert(EventWrap::BumperR, KeyList{ key_list: vec![18] });
-            //hashy_map.insert(EventWrap::Left, );  //D-Pad Left
-            //hashy_map.insert(EventWrap::Right, ); //D-Pad Right
-            //hashy_map.insert(EventWrap::Up, KeyList{ key_list: vec![82] });    //D-Pad Up
-            //hashy_map.insert(EventWrap::Down, KeyList{ key_list: vec![84] });  //D-Pad Down
-            //hashy_map.insert(EventWrap::Joy, );   //Left Stick
-            //hashy_map.insert(EventWrap::Cam, );   //Right Stick
-            hashy_map.insert(EventWrap::MenuR, KeyList{ key_list:vec![17, 18, 123, 66] }); //Start
-            hashy_map.insert(EventWrap::MenuL, KeyList{ key_list:vec![17, 18, 123, 9] }); //Second Center Button left
-            //hashy_map.insert(EventWrap::ActionH, KeyList{ key_list: vec![88] }); //X
-            //hashy_map.insert(EventWrap::ActionB, ); //B
-            //hashy_map.insert(EventWrap::ActionV, ); //Y
-            //hashy_map.insert(EventWrap::ActionA, ); //A
+            hashy_map.insert(gamepad_button_number(Button::RightShoulder), KeyList{ key_list: vec![18] });
+            hashy_map.insert(gamepad_button_number(Button::LeftShoulder), KeyList{ key_list: vec![17] });
+            hashy_map.insert(gamepad_button_number(Button::DPadUp), KeyList{ key_list: vec![82] });    //D-Pad Up
+            hashy_map.insert(gamepad_button_number(Button::DPadDown), KeyList{ key_list: vec![84] });  //D-Pad Down
+            hashy_map.insert(gamepad_button_number(Button::Start), KeyList{ key_list:vec![220, 66] }); //Start
+            hashy_map.insert(gamepad_button_number(Button::Back), KeyList{ key_list:vec![220, 9] }); //Second Center Button left
+            hashy_map.insert(gamepad_button_number(Button::X), KeyList{ key_list: vec![88] }); //X
             /*
             List to Map:
             Speed up: R,
@@ -241,7 +228,7 @@ pub(crate) fn key_mapping_config(logfile: &mut File) -> Result<KeyMap, String>{
             Option 1-9: Alt+1-9
             Toggle Marks: V,
             */
-            new_map.mapping.insert(0, hashy_map);
+            new_map.mapping.insert("030000005e040000ff02000000007200".to_string(), hashy_map);
             let serialized = match toml::to_string_pretty(&new_map) {
                 Ok(t) => t,
                 Err(e) => {
@@ -252,7 +239,7 @@ pub(crate) fn key_mapping_config(logfile: &mut File) -> Result<KeyMap, String>{
                 Ok(t) => t,
                 Err(e) => return Err(e.to_string())
             };
-            file.write(&*serialized.as_bytes());
+            file.write(&*serialized.as_bytes()).ok();
             key_mapping_config(logfile)
         }
     };

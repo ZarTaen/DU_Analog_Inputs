@@ -29,7 +29,7 @@ pub fn timestamp_now() -> Rfc3339Timestamp{
 }
 
 pub fn log_write(file: &mut File, message_type: &str, message: &str) {
-    file.write(format!("|{}|{}: {}\n", timestamp_now(), message_type, message).as_ref());
+    file.write(format!("|{}|{}: {}\n", timestamp_now(), message_type, message).as_ref()).ok();
 }
 
 const VERSION: &'static str = env!("CARGO_PKG_VERSION");

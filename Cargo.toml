@@ -1,6 +1,7 @@
 [package]
 name = "DU_analog_inputs"
-version = "1.0.0"
+version = "2.0.0"
+#I effed up by thinking anything after 1.0 will not break the files, but welp.
 edition = "2021"
 authors = ["ZarTaen <zartaen@gmail.com>"]
 
@@ -17,3 +18,18 @@ pasts = "0.8.0"
 serde = { version = "1.0.137", features = ["derive"] }
 serde_with  = "1.13.0"
 toml = "0.5.9"
+flume="0.10.12"
+sdl2-sys = "0.35.2"
+
+[dependencies.sdl2]
+version = "0.35.2"
+default-features = false
+features = ["static-link","use-vcpkg"]
+
+[package.metadata.vcpkg]
+dependencies = ["sdl2"]
+git = "https://github.com/microsoft/vcpkg"
+rev = "261c458af6e3eed5d099144aff95d2b5035f656b"
+
+[package.metadata.vcpkg.target]
+x86_64-pc-windows-msvc = { triplet = "x64-windows-static-md" }

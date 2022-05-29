@@ -1,69 +1,74 @@
-# DU_Analog_Inputs (WIP)
+# DU_Analog_Inputs
 ## Intro
-This is a small rust tool that allows sending **several** analog inputs to the game Dual Universe by encoding them into relative mouse movements.
-For Usage, at least read the "How to use this". If you want to know how it works and possibly improve it, see "How does the input get into the game?".
+This is a Rust tool that allows sending **several** analog inputs to the game Dual Universe (DU) by encoding them into relative mouse movements.
+For usage, at least read the "Usage". If you want to know how it works and possibly improve it, see "How does the input get into the game?".
 For any questions, feel free to hit me up on Discord via PM (ZarTaen#6409) or via the OSIN Discord Server https://discord.gg/B5fVQ7YKNM
 
 ## Working
 - Xbox Gamepad all Analog Axis for 5Axis and 6Axis (See Lua Script Snippets and examples)
+- Basically everything else should work to a degree (Aside from whatever JoyBallMotion is), but the default is for Xbox Gamepad and tested as such
 
-## What to know before using it
+## Usage
 First, every Lua script that is supposed to work with this has to be adapted. The files under "Lua Script Snippets" demonstrate how I built the support into my ship for testing purposes.
-There are most likely better ways and formulas, as well as preferences on a player by player basis, but I will leave this part mostly to the community.
-However, lets just say that the setup that I include as an example was adjusted by me to be as consistent as possible, framedrop or not. It is not perfect and feedback is appreciated.
+There is an autoconfig based on a slightly improved default script, thanks to Davemane42.
 
-The tool can be run whenever and looks for various game input devices, such as an Xbox Gamepad. Connected devices will be listed in the terminal output, always.
-It is going to be fiddly to set it up. But once the setup is complete, it mostly works like a charm.
+The tool can be run whenever and looks for various game input devices, such as an Xbox Gamepad. Once the tool is running, it will have a small terminal window open. Don't be scared by that and keep it open, closing it will close the tool. The first output should be version number.
+The second outputs should be your recognized devices and their GUID. Copy those GUIDS and note which device it is. They are needed to assign mappings. At first startup, the default configs will be created.
+Use this chance to check for inputs, debug will be active. While debug is active, the Inputs will be printed into the terminal. But be prepared that an Xbox Gamepad is plug and play and will already use the default mappings. 
 
----
+`^` or `Right Ctrl` will toggle encoding and send analog input. If this is active, your analog inputs **WILL** move your mouse cursor very violently, including camera movements, towards the bottom right by default.
+It is intended to lock the camera ingame before activating the analog input with `^` or `Right Ctrl`. However analog input by default has this mapped to the start button for an Xbox Controller. In the Lua example, the additional key is the boost activation key.
 
-Once the tool is running, it will have a small terminal window open. Don't be scared by that and keep it open, closing it will close the tool.
-If you want, I can get rid of it sometime. 
-
-Alt+Ctrl+F12 will toggle encoding and send analog input. If this is active, your analog inputs **WILL** move your mouse cursor very violently, including camera movements, towards the bottom right by default. Therefore, a key ingame is needed to activate and deactivate the camera lock!
-It is intended to lock the camera ingame before activating the analog input with Alt+Ctrl+F12, however analog input by default has this mapped to the start button for an Xbox Controller. In the Lua example, the additional key is the boost activation key.
-
-NEVER close the tool while mapped buttons are pressed! This will result in keys getting stuck! The deactivation with Alt+Ctrl+F12 however is not affected by this.
+For details about mapping a device, see "Mapping Files Explained". If a gamepad-like device isnt properly recognized, get the gamecontrollerdb.txt and place it next to the .exe. For some devices this may help.
 
 ---
 
 Should the inputs not work as expected after setting everything up correctly, dont hesitate to tell me and when I have time, we can troubleshoot it.
 
 ## Mapping Files Explained
-Axis Example:
-```toml 
-[mapping.0]
-CamY = 'YAxis2'
-TriggerL = 'ZAxis2'
-JoyY = 'YAxis1'
-CamX = 'XAxis2'
-JoyX = 'XAxis1'
-TriggerR = 'ZAxis1'
+Axis Example with Xbox Gamepad GUID:
+
+```toml
+[mapping.030000005e040000ff02000000007200]
+0 = 'XAxis1'
+1 = 'YAxis1'
+2 = 'XAxis2'
+5 = 'ZAxis1'
+4 = 'ZAxis2'
+3 = 'YAxis2'
 ```
-The first line of each toml block always has to be `[mapping.x]`, where x stands for your device ID. You can have several of those blocks, for different ids, but not the same id! The left side is the corresponding input name of your device. This can be found when using and pressing them in debug mode.
-The right side of the input names are the input results. For the `axis_mapping.toml` file, those have to be one of the Axis, as found in `/examples/axis_mapping_targets.txt`.
+The first line of each toml block always has to be `[mapping.x]`, where x stands for your device GUID that is always printed at startup or when it is connected. You can have several of those blocks, for different ids, but not the same id! The left side is the axis ID of your device. This can be found when using and pressing them in debug mode.
+The right side of the axis IDs are the input targets. For the `axis_mapping.toml` file, those have to be one of the Axis, as found in `/examples/axis_mapping_targets.txt`.
 The same things as the Axis file apply to the `key_mapping.toml`, however, instead of Axis to map to, it will accept a comma separated key code list. 
 
-KeyMap Example:
+KeyMap Example with Xbox Gamepad GUID:
 ```toml
-[mapping.0]
-MenuL = '18,123,9'
-BumperL = '17'
-MenuR = '18,123,66'
+[mapping.030000005e040000ff02000000007200]
+7 = '220,66'
+11 = '84'
+6 = '220,9'
+10 = '82'
+5 = '18'
+2 = '88'
+4 = '17'
 ```
-This means that you can map a single button to key combinations such as alt+j! Or the whole keyboard, whatever floats your boat.
+This means that you can map a single button to key combinations such as `alt+j`! Or the whole keyboard, whatever floats your boat.
 The default key mappings are the most basic thing for Xbox Controllers: 
-- Activating and deactivating the Analog Input, by pressing Alt+Ctrl+F12 and B.
-- Activating and deactivating the Analog Input when trying to tab, by pressing Alt+Ctrl+F12 + Tab.
-- Left Bumper is Ctrl, for default brake
+- `Start` (7) for toggling the Analog Input, by pressing `^` and `B` (220,66) (Change to assigned boost button in DU, I use `^` as boost and just removed `B`).
+- `Select`? (6) for toggling the Analog Input when trying to tab, by pressing `^` + Tab in DU.
+- `Left Bumper` (4) is Ctrl, for default brake
+- `Right Bumper` (5) is Alt, for default modifier
+- `DPad Up` (10) is R for Throttle Up
+- `DPad Down` (11) is T for Throttle down
+- `X` is X for Trajectory
 
-I really recommend for the community to create mappings for various devices and rely on each other, as it is essentially impossible to do mappings for devices you dont own,
+I really recommend for the community to create mappings for various devices and rely on each other, as it is essentially impossible to do mappings for devices I do not own,
 and it is all preference anyway.
 After deliberating a long time, that is also why I decided not to include a fully key-mapped Xbox Gamepad.
 
 For Keycodes see https://boostrobotics.eu/windows-key-codes/.
+Beware that some keycodes will not be key specific (Ctrl (163) is changed to Ctrl (17/162) only for example)
 
-Beware that some keycodes will not be key specific (Ctrl 163 is changed to Ctrl only for example)
 ## How does the input get into the game?
 Every axis of a device is mapped to deliver a value between -1.0 and 1.0, other than Analog Triggers, those are 0.0 to 1.0.
 
@@ -97,7 +102,6 @@ Mouse Y-Axis for 6Axis:
   * 1`1 1111 11`00 0000 0111 1111
 * YAxis1: 
   * 11 1111 11`11 1111 1`111 1111
-
 
 5Axis is slightly different, it uses bigger ranges for both XAxis and YAxis, at 0-127, uses 0.0-1.0 axis of triggers, and has overall 1 more bit.
 
@@ -151,12 +155,16 @@ Thanks to Davemane42 for doing the autoconfig based on the flying default. I mod
 ## Todo
 - Gathering feedback for the send rate
 - User-Friendliness
-- ~~Input device to keyboard mapping (including Right Ctrl, I might consider double mappings so analog input toggle can be done with 1 mapped button)~~
-  - ~~Implemented multidevice+multikey mapping~~
+
+## Change in latest Version
+- Changed input backend to SDL2 for better device compabitility.
+- Changed analog input toggle key to `^` (220) and `Right Ctrl` (163)
 
 ## I want to contribute!
 Feel free to do so. Especially for the Lua side of things, help is very appreciated. Do not hesitate to contact me either via Discord (ZarTaen#6409)
 or over Github.
+
+A BIG THANKS TO Blazemonger and Davemane42 for help with testing!
 
 ## This is too complicated, I want to complain!
 I too like to complain in my spare time. For complaints please open an issue or add to an existing one. If it is not solvable by me, pester NQ with "Analog Inputs When".

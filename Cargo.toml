@@ -1,6 +1,6 @@
 [package]
 name = "DU_analog_inputs"
-version = "2.0.6"
+version = "2.0.7"
 #I effed up by thinking anything after 1.0 will not break the files, but welp.
 edition = "2021"
 authors = ["ZarTaen <zartaen@gmail.com>"]

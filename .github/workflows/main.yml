@@ -13,16 +13,8 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-      - name: Cargo-VCPKG
-        uses: actions-rs/cargo@v1
-        with:
-          command: install
-          args: cargo-vcpkg
-      - name: Cargo VCPKG build
-        uses: actions-rs/cargo@v1
-        with:
-          command: vcpkg
-          args: build
+      - uses: friendlyanon/setup-vcpkg@v1
+        with: { committish: 63aa65e65b9d2c08772ea15d25fb8fdb0d32e557 }
       - name: Compile
         uses: actions-rs/cargo@v1
         with:
@@ -34,8 +26,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v2.0.4
-          release_name: v2.0.4
+          tag_name: v2.0.5
+          release_name: v2.0.5
           draft: true
           prerelease: false
       - name: Upload release
@@ -45,7 +37,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: target\release\DU_analog_inputs.exe
-          asset_name: DU_Analog_Inputs_v204.exe
+          asset_name: DU_Analog_Inputs_v205.exe
           asset_content_type: application/zip
       - name: Publish release
         uses: eregon/publish-release@v1
